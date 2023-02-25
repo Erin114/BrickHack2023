@@ -1,37 +1,20 @@
 // Moss Limpert
-// IGME 430
+// Brickhack 2023
 // 02/12/23
 // Http api assignment 1
 
 const http = require('http');
 const url = require('url');
 const query = require('querystring');
-const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
   'GET': {
-    '/': htmlHandler.getIndex,
-    '/style.css': htmlHandler.getCSS,
-    '/success': jsonHandler.success,
-    '/badRequest': jsonHandler.badRequest,
-    '/unauthorized': jsonHandler.unauthorized,
-    '/forbidden': jsonHandler.forbidden,
-    '/internal': jsonHandler.internal,
-    '/notImplemented': jsonHandler.notImplemented,
-    '/notReal': jsonHandler.notReal,
     '/getUsers': jsonHandler.getUsers,
-    index: htmlHandler.getIndex,
   },
   'HEAD': {
-    '/success': jsonHandler.successMeta,
-    '/badRequest': jsonHandler.badRequestMeta,
-    '/unauthorized': jsonHandler.unauthorizedMeta,
-    '/forbidden': jsonHandler.forbiddenMeta,
-    '/internal': jsonHandler.internalMeta,
-    '/notImplemented': jsonHandler.notImplementedMeta,
   },
   'POST': {
     '/addUser': jsonHandler.addUser
