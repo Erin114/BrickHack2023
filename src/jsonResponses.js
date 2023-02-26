@@ -92,12 +92,12 @@ const parseBody = (request, response, handlerFunction) => {
     //name=value&name2=value2 <-- data format
     const bodyString = Buffer.concat(body).toString();  // takes contents of a buffer, slamo together
 
-    let bodyParams;
+    let bodyObject;
     if (request.headers['content-type'] === 'application/json') {
-      bodyParams = JSON.parse(bodyString);
+      bodyObject = JSON.parse(bodyString);
     }
     
-    handlerFunction(request, response, bodyParams);
+    handlerFunction(request, response, bodyObject);
   });
 }
 
@@ -154,6 +154,8 @@ const addUser = (request, response, types, data) => {
     //and sent response with a message
     if (responseCode === 201) {
       responseJSON.message = 'Created Successfully';
+      //responseJSON.userInfo = temporaryData[data.name];
+      console.log(responseJSON);
       return respondJSON(request, response, responseCode, responseJSON);
     }
     // 204 has an empty payload, just a success
