@@ -103,6 +103,11 @@ const parseBody = (request, response, handlerFunction) => {
   });
 }
 
+// create user status
+const createUserStatus = (request, response, data) => {
+
+}
+
 // 404
 const notFound = (request, response, types) => {
     const responseJSON = {

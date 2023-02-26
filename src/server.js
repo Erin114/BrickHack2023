@@ -39,9 +39,10 @@ const onRequest = (request, response) => {
       urlStruct.notFound(request, response);
     }
 
+
     const methodHandlers = urlStruct[request.method];
     if (methodHandlers[parsedUrl.pathname]) {
-      methodHandlers[parsedUrl.pathname](request, response, acceptedTypes[0], params);
+      methodHandlers[parsedUrl.pathname](request, response);
     } else {
       urlStruct.notFound(request, response, params);
     }
