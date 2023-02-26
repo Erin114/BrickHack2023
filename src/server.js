@@ -9,8 +9,8 @@ const query = require('querystring');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
-//const port = process.env.PORT || process.env.NODE_PORT || 3000;
-const port = 80;  // for emi hosting, use this port
+const port = process.env.PORT || process.env.NODE_PORT || 3000;
+//const port = 80;  // for emi hosting, use this port
 
 // endpoints
 const urlStruct = {

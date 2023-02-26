@@ -19,9 +19,9 @@ const temporaryData = {
         name: "willow",
         statuses: {
           "they/them": [
-            [bubbles[friends], true],
-            [bubbles[family], false],
-            [bubbles[classmates], true]
+            ["friends", true],
+            ["family", false],
+            ["classmates", true]
           ]
         },
         userBubbles: ["friends", "family", "classmates"],
@@ -32,8 +32,8 @@ const temporaryData = {
         name: "erin",
         statuses: {
           "she/her": [
-            [bubbles[friends], true],
-            [bubbles[family], true]
+            ["friends", true],
+            ["family", true]
           ]
         },
         userBubbles: ["friends", "family"],
@@ -44,7 +44,7 @@ const temporaryData = {
         name: "moss",
         statuses: {
           "he/him": [
-            [bubbles[family], true]
+            ["family", true]
           ],
         },
         userBubbles: ["family"],
@@ -95,8 +95,6 @@ const parseBody = (request, response, handlerFunction) => {
     let bodyParams;
     if (request.headers['content-type'] === 'application/json') {
       bodyParams = JSON.parse(bodyString);
-    } else {
-      bodyParams = query.parse(bodyString);               // now is a js object
     }
     
     handlerFunction(request, response, bodyParams);
@@ -104,7 +102,7 @@ const parseBody = (request, response, handlerFunction) => {
 }
 
 // create user status
-const createUserStatus = (request, response, data) => {
+const createUserStatus = (request, response) => {
 
 }
 
