@@ -11,65 +11,20 @@ const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
+// endpoints
 const urlStruct = {
   'GET': {
     '/': htmlHandler.getIndex,
     '/style.css': htmlHandler.getCSS,
-    '/success': jsonHandler.success,
-    '/badRequest': jsonHandler.badRequest,
-    '/unauthorized': jsonHandler.unauthorized,
-    '/forbidden': jsonHandler.forbidden,
-    '/internal': jsonHandler.internal,
-    '/notImplemented': jsonHandler.notImplemented,
-    '/notReal': jsonHandler.notReal,
     '/getUsers': jsonHandler.getUsers,
     index: htmlHandler.getIndex,
   },
   'HEAD': {
-    '/success': jsonHandler.successMeta,
-    '/badRequest': jsonHandler.badRequestMeta,
-    '/unauthorized': jsonHandler.unauthorizedMeta,
-    '/forbidden': jsonHandler.forbiddenMeta,
-    '/internal': jsonHandler.internalMeta,
-    '/notImplemented': jsonHandler.notImplementedMeta,
   },
   'POST': {
     '/addUser': jsonHandler.addUser
   },
   notFound: jsonHandler.notFound
-}
-
-// parse body (NEEDS UPDATE FOR XML)
-const parseBody = (request, response, handlerFunction) => {
-    // re-assemble data
-    // acquire it
-    const body = [];
-  
-    // event handler
-    request.on('error', (err) => {
-      console.dir(err); // works better when logging an obj
-      response.statusCode = 400;
-      response.end();
-    });
-    // data event gets fired in order, even if data doesnt arrive in order
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    });
-  
-    request.on('end', () => {
-      // application/x-www-form-urlencoded <-- data type
-      //name=value&name2=value2 <-- data format
-      const bodyString = Buffer.concat(body).toString();  // takes contents of a buffer, slamo together
-  
-      let bodyParams;
-      if (request.headers['content-type'] === 'application/json') {
-        bodyParams = JSON.parse(bodyString);
-      } else {
-        bodyParams = query.parse(bodyString);               // now is a js object
-      }
-      
-      handlerFunction(request, response, bodyParams);
-    });
 }
 
 // on request made to the server
@@ -80,12 +35,12 @@ const onRequest = (request, response) => {
 
     // if request using method we dont handle
     if (!urlStruct[request.method]) {
-      urlStruct['HEAD'].notFound(request, response);
+      urlStruct.notFound(request, response);
     }
 
     const methodHandlers = urlStruct[request.method];
     if (methodHandlers[parsedUrl.pathname]) {
-      methodHandlers[parsedUrl.pathname](request, response, acceptedTypes[0], params)
+      methodHandlers[parsedUrl.pathname](request, response, acceptedTypes[0], params);
     } else {
       urlStruct.notFound(request, response, params);
     }

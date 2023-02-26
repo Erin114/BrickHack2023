@@ -3,7 +3,7 @@
 <head>
   <title>Our simple HTTP server</title>
   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <!-- <link rel="stylesheet" type="text/css" href="style.css"> -->
   
   <script>
     const handleResponse = (response) => {
@@ -21,19 +21,15 @@
             if (contentType === 'application/json') {
               const parsedResponse = JSON.parse(resText);
 
-            } else if (contentType === 'text/xml') {
-              // parse xml into a searchable document
-              // fetch works better with JSON
-              // xmlhttprequest works better with xml
-              const parsedResponse = new window.DOMParser().parseFromString(resText, 'text/xml'); 
+              // HERE IS WHERE YOU MESS WITH JSON AND PUT THINGS PLACES DO IT HERE
             }
+
             content.appendChild(h2);
             content.appendChild(raw);
           }); 
         };
 
         const sendFetchRequest = (url, method) => {
-          //const xhr = new XMLHttpRequest();
           // FETCH API parameters
           const options = {
             method: method,
@@ -42,13 +38,6 @@
             },
           }
 
-          if (method === "post") {
-            let data;
-            let name = document.querySelector('#nameField').value;
-            let age = document.querySelector('#ageField').value;
-            data = `name=${name}&age=${age}`;
-            options.body = data;
-          }
 
           const fetchPromise = fetch(url, options);   // in future we will gt rid of favicon asks
           fetchPromise.then(handleResponse);          // promises let us keep track of requests
@@ -61,14 +50,6 @@
           data = `name=${name}&age=${age}`;
 
           url += '?' + data;
-          // const options = {
-          //   method: method,
-          //   headers: {
-          //     'Accept': 'application/json',
-          //     'Content-Type': 'application/x-www-form-urlencoded',
-          //   },
-          //   body: data
-          // }
 
           dataJSON = {
             name: name,
@@ -93,7 +74,9 @@
         const init = () => {
           const getUserButton = document.querySelector("[value='Get User']");
           const addUserButton = document.querySelector("[value='Add User']");
-          const getButtonAction = () => { sendFetchRequest(
+          const getButtonAction = (e) => { 
+            e.preventDefault();
+            sendFetchRequest(
             `${document.querySelector("#urlField").value}`,  
             `${document.querySelector("#userForm").method}`
             )};

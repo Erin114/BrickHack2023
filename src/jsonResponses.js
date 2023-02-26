@@ -1,6 +1,6 @@
 const query = require('querystring');
 
-const users = {};
+const temporaryData = {};
 
 // respond with json object
 const respondJSON = (request, response, status, object) => {
@@ -15,214 +15,48 @@ const respondJSONMeta = (request, response, status) => {
     response.end();
 };
 
-// // respond with xml object
-// const respondXML = (request, response, status, message, id) => {
-//     const xmlResponse = `<response><message>${message}</message><id>${id}</id></response>`;
+// parse body
+const parseBody = (request, response, handlerFunction) => {
+  // re-assemble data
+  // acquire it
+  const body = [];
 
-//     response.writeHead(status, {'Content-Type': 'text/xml'});
-//     response.write(xmlResponse);
-//     response.end();
-// }
+  // event handler
+  request.on('error', (err) => {
+    console.dir(err); // works better when logging an obj
+    response.statusCode = 400;
+    response.end();
+  });
+  // data event gets fired in order, even if data doesnt arrive in order
+  request.on('data', (chunk) => {
+    body.push(chunk);
+  });
 
-// // respond with xml metadata
-// const respondXMLMeta = (request, response, status) => {
-//     response.writeHead(status, {'Content-Type': 'text/xml'});
-//     response.end();
-// }
+  request.on('end', () => {
+    // application/x-www-form-urlencoded <-- data type
+    //name=value&name2=value2 <-- data format
+    const bodyString = Buffer.concat(body).toString();  // takes contents of a buffer, slamo together
 
-// /success with 200 status code --- DONE
-// /badRequest with 400 status if missing ?valid=true --- DONE
-// /badRequest with 200 status code if ?valid=true --- DONE
-// /unauthorized with 401 if missing ?loggedIn=yes --- DONE
-// /unauthorized with 200 if ?loggedIn=yes --- DONE
-// /forbidden with 403 status code --- done
-// /internal with 500 status code --- done
-// /notImplemented with 501 status code --- done
+    let bodyParams;
+    if (request.headers['content-type'] === 'application/json') {
+      bodyParams = JSON.parse(bodyString);
+    } else {
+      bodyParams = query.parse(bodyString);               // now is a js object
+    }
+    
+    handlerFunction(request, response, bodyParams);
+  });
+}
 
-// const notFound = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'The page you are looking for was not found.',
-//         id: 'notFound',
-//     }
+// 404
+const notFound = (request, response, types) => {
+    const responseJSON = {
+        message: 'The page you are looking for was not found.',
+        id: 'notFound',
+    }
+    return respondJSON(request, response, 404, responseJSON);
+}
 
-//     if (types === 'text/xml') {
-//         return respondXML(requst, response, 404, responseJSON.message, responseJSON.id);
-//     }
-//     return respondJSON(request, response, 404, responseJSON);
-// }
-
-// // SUCCESS
-// const success = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'Successful response',
-//     }
-
-//     if (types === 'text/xml') {
-//         return respondXML(request, response, 200, "This is a successful response.");
-//     }
-
-//     return respondJSON(request, response, 200, responseJSON);
-// }
-// const successMeta = (request, response, types) => {
-//     if (types === 'text/xml') {
-//         return respondXMLMeta(request, response, 200);
-//     }
-// }
-// // BAD REQUEST
-// const badRequest = (request, response, types, params) => {
-//     const responseJSON = {
-//         message: 'This request has the required parameters',
-//     };
-
-//     if (!params.valid || params.valid !== 'true') {
-//         responseJSON.message = 'Missing valid query parameter set to true';
-//         responseJSON.id = 'badRequest';
-        
-//         if (types === 'text/xml') {
-//             return respondXML(request, response, 400, responseJSON.message, responseJSON.id);
-//         }
-//         return respondJSON(request, response, 400, responseJSON);
-//     }
-//     return respondJSON(request, response, 200, responseJSON);
-// }
-// const badRequestMeta = (request, response, types, params) => {
-//     const responseJSON = {
-//         message: 'This request has the required parameters',
-//     };
-
-//     if (!params.valid || params.valid !== 'true') {
-//         responseJSON.message = 'Missing valid query parameter set to true';
-//         responseJSON.id = 'badRequest';
-        
-//         if (types === 'text/xml') {
-//             return respondXMLMeta(request, response, 400, responseJSON.message, responseJSON.id);
-//         }
-//         return respondJSONMeta(request, response, 400, responseJSON);
-//     }
-//     return respondJSONMeta(request, response, 200, responseJSON);
-// }
-// // UNAUTHORIZED
-// const unauthorized = (request, response, types, params) => {
-//     const responseJSON = {
-//         message: 'You are authorized to view this page',
-//     };
-
-//     if (!params.loggedIn || params.loggedIn !== 'true') {
-//         responseJSON.message = 'Missing valid loggedIn parameter set to true.';
-//         responseJSON.id = 'unauthorized';
-        
-//         if (types === 'text/xml') {
-//             return respondXML(request, response, 401, responseJSON.message, responseJSON.id);
-//         }
-//         return respondJSON(request, response, 401, responseJSON);
-//     }
-//     return respondJSON(request, response, 200, responseJSON);
-// }
-// const unauthorizedMeta = (request, response, types, params) => {
-//     const responseJSON = {
-//         message: 'You are authorized to view this page',
-//     };
-
-//     if (!params.loggedIn || params.loggedIn !== 'true') {
-//         responseJSON.message = 'Missing valid loggedIn parameter set to true.';
-//         responseJSON.id = 'unauthorized';
-        
-//         if (types === 'text/xml') {
-//             return respondXMLMeta(request, response, 401, responseJSON.message, responseJSON.id);
-//         }
-//         return respondJSONMeta(request, response, 401, responseJSON);
-//     }
-//     return respondJSONMeta(request, response, 200, responseJSON);
-// }
-// // FORBIDDEN
-// const forbidden = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'This page is forbidden',
-//         id: 'forbidden'
-//     };
-
-//     if (types === 'text/xml') {
-//         return respondXML(request, response, 403, responseJSON.message, responseJSON.id);
-//     }
-//     return respondJSON(request, response, 403, responseJSON);
-// }
-// const forbiddenMeta = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'This page is forbidden',
-//     };
-
-//     if (types === 'text/xml') {
-//         return respondXMLMeta(request, response, 403, responseJSON.message, responseJSON.id);
-//     }
-//     return respondJSONMeta(request, response, 403, responseJSON);
-// }
-// // INTERNAL
-// const internal = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'Internal server error',
-//         id: 'internal'
-//     };
-
-  
-//     if (types === 'text/xml') {
-//         return respondXML(request, response, 500, responseJSON.message, responseJSON.id);
-//     }
-//     return respondJSON(request, response, 500, responseJSON);
-// }
-// const internalMeta = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'Internal server error',
-//         id: 'internal'
-//     };
-
-  
-//     if (types === 'text/xml') {
-//         return respondXMLMeta(request, response, 500, responseJSON.message, responseJSON.id);
-//     }
-//     return respondJSONMeta(request, response, 500, responseJSON);
-// }
-// // NOT IMPLEMENTED
-// const notImplemented = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'Endpoint not implemented',
-//         id: 'notImplemented'
-//     };
-
-  
-//     if (types === 'text/xml') {
-//         return respondXML(request, response, 501, responseJSON.message, responseJSON.id);
-//     }
-//     return respondJSON(request, response, 501, responseJSON);
-// }
-// const notImplementedMeta = (request, response, types) => {
-//     const responseJSON = {
-//         message: 'Internal server error',
-//         id: 'internal'
-//     };
-
-  
-//     if (types === 'text/xml') {
-//         return respondXMLMeta(request, response, 500, responseJSON.message, responseJSON.id);
-//     }
-//     return respondJSONMeta(request, response, 500, responseJSON);
-// }
-// // NOT REAL
-// const notReal = (request, response, types) => {
-//     const responseJSON = {
-//         message: '',
-//         id: 'notReal'
-//     };
-
-//     return respondJSON(requset, response, 404, responseJSON);
-// }
-// const notRealMeta = (request, response, types) => {
-//     const responseJSON = {
-//         message: '',
-//         id: 'notReal'
-//     };
-
-//     return respondJSONMeta(request, response, 404, responseJSON);
-// }
 //function to add a user from a POST body
 const addUser = (request, response, types, data) => {
     //default json message
@@ -230,7 +64,7 @@ const addUser = (request, response, types, data) => {
       message: 'Name and age are both required.',
     };
   
-    // I CAN RETRIEVE JSON YAY
+    // HERE IS WHERE YOU DO THINGS WITH THE DATA
     request.on('data', (chunk) => {
         console.log(JSON.parse(chunk.toString()));
     });
@@ -247,16 +81,16 @@ const addUser = (request, response, types, data) => {
     let responseCode = 204;
   
     //If the user doesn't exist yet
-    if(!users[data.name]) {
+    if(!temporaryData[data.name]) {
       
       //Set the status code to 201 (created) and create an empty user
       responseCode = 201;
-      users[data.name] = {};
+      temporaryData[data.name] = {};
     }
   
     //add or update fields for this user name
-    users[data.name].name = data.name;
-    users[data.name].age = data.age;
+    temporaryData[data.name].name = data.name;
+    temporaryData[data.name].age = data.age;
   
     //if response is created, then set our created message
     //and sent response with a message
@@ -274,7 +108,7 @@ const getUsers = (request, response) => {
     const responseJSON = {
         message: 'Here are the users!',
         id: 'getUsers',
-        users
+        users: temporaryData
     };
 
     respondJSON(request, response, 200, responseJSON);
@@ -282,20 +116,6 @@ const getUsers = (request, response) => {
 
 module.exports = {
     notFound,
-    success,
-    successMeta,
-    badRequest,
-    badRequestMeta,
-    unauthorized,
-    unauthorizedMeta,
-    forbidden,
-    forbiddenMeta,
-    internal,
-    internalMeta,
-    notImplemented,
-    notImplementedMeta,
-    notReal,
-    notRealMeta,
     addUser,
     getUsers
 }

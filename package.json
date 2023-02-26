@@ -1,16 +1,17 @@
 {
   "name": "brickhack-2023",
   "version": "1.0.0",
-  "description": "Bubbles status app by Moss Limpert, Erin Ford, and Will O'Brian",
+  "description": "Bubbles status app by Moss Limpert, Erin Ford, and Will O'Brien",
   "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./src/server.js",
+    "test": "echo \"No tests\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Erin114/BrickHack2023.git"
   },
-  "author": "Moss Limpert, Erin Ford, Will O'Brian",
+  "author": "Moss Limpert, Erin Ford, Will O'Brien",
   "license": "Hippocratic-2.1",
   "bugs": {
     "url": "https://github.com/Erin114/BrickHack2023/issues"
