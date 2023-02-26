@@ -19,8 +19,8 @@
             raw.innerText = resText;
 
             if (contentType === 'application/json') {
-              const parsedResponse = JSON.parse(resText);
-
+              const parsedResponse = response.status === 200 ? JSON.parse(resText) : "response code:" + response.status;
+              console.log(parsedResponse);
               // HERE IS WHERE YOU MESS WITH JSON AND PUT THINGS PLACES DO IT HERE
             }
 
