@@ -1,6 +1,61 @@
 const query = require('querystring');
 
-const temporaryData = {};
+const temporaryData = {
+  server: {
+    bubbles: {
+      friends: {
+        userHandles: ["wob", "sharkies"]
+      },
+      classmates: {
+        userHandles: ["wob"]
+      },
+      family: {
+        userHandles: ["wob", "sharkies", "fiddlersGreen"]
+      }
+    },
+    users: {
+      willo: {
+        handle: "wob",
+        name: "willow",
+        statuses: {
+          "they/them": [
+            [bubbles[friends], true],
+            [bubbles[family], false],
+            [bubbles[classmates], true]
+          ]
+        },
+        userBubbles: ["friends", "family", "classmates"],
+        encryptedPassword: ""
+      },
+      erin: {
+        handle: "sharkies",
+        name: "erin",
+        statuses: {
+          "she/her": [
+            [bubbles[friends], true],
+            [bubbles[family], true]
+          ]
+        },
+        userBubbles: ["friends", "family"],
+        encryptedPassword: ""
+      },
+      moss: {
+        handle: "fiddlersGreen",
+        name: "moss",
+        statuses: {
+          "he/him": [
+            [bubbles[family], true]
+          ],
+        },
+        userBubbles: ["family"],
+        encryptedPassword: ""
+      }
+    },
+  },
+  client: {
+
+  }
+};
 
 // respond with json object
 const respondJSON = (request, response, status, object) => {
